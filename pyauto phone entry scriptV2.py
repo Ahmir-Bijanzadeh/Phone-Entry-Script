@@ -1,22 +1,41 @@
 import pyautogui
 import time
 import re
-#import os
-
+import os
+import keyboard
+from rich import print
 # Get the path to the user's desktop
-#desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
 
 # Combine the desktop path with the filename
-#file_path = os.path.join(desktop_path, "phone_numbers.txt")
+file_path = os.path.join(desktop_path, "phone_numbers.txt")
 
-# small delay before the rest of the program executes, enough time to focus the target window
-time.sleep(5) 
-
-# Specify the path to the text file containing phone numbers on the desktop
-file_path = "C:/Users/ahmir/OneDrive/Desktop/phone entry script/phone_numbers.txt"  # Replace with your desired path
-
+print("\n[yellow]Program is ready, please press[/yellow][green] f2[/green][yellow] to begin.[/yellow]")
+#file_path = "C:/Users/ahmir/OneDrive/Desktop/phone entry script/phone_numbers.txt" old for laptop version
 # Initialize an empty set to store unique phone numbers
 unique_phone_numbers = set()
+running = False
+
+def start_printing():
+    global running
+    if not running:
+        print("\n[green]Program started, will begin pasting in 5 seconds. \n\nPlease make sure the correct window is focused!")
+        # small delay before the rest of the program executes, enough time to focus the target window
+        time.sleep(5) 
+        running = True
+
+
+# Define a function to handle the 'q' key press and set the running flag to False
+def emergency_stop():
+    global running
+    if running:
+        print("\n[red]Program terminated.")
+        running = False
+
+
+# Register the hotkey
+keyboard.add_hotkey('f4', emergency_stop)
+keyboard.add_hotkey('f2', start_printing)
 
 # process phone numbers
 def process_phone_numbers(file):
@@ -25,6 +44,8 @@ def process_phone_numbers(file):
         numbers = re.split(r'[,/]', line)
         
         for number in numbers:
+            if not running:
+                break
             # Remove leading/trailing whitespace and newline characters
             phone_number = number.strip()
             # Remove any non-digit characters
@@ -43,27 +64,26 @@ def process_phone_numbers(file):
                 time.sleep(2) # delay between inputs
                 pyautogui.press("enter")
                 time.sleep(1) # delay between inputs
-
-# Read phone numbers from the text file, format them, and skip duplicates
-try:
-    with open(file_path, "r") as file:
-        process_phone_numbers(file)
-
-except FileNotFoundError:
-    print(f"File not found: {file_path}")
-    print("Creating a new file...")
-    print("New File Created, Please go populate it with phone numbers")
-    # Create an empty file at the specified path
-    with open(file_path, "w") as file:
-        pass  # This will create an empty file
-
-except Exception as e:
-    print(f"An error occurred: {str(e)}")
+    if running:
+        print("\n[magenta]All phone numbers copied!")
 
 
-#todo list: 
-# color the text for fun
-# update the readme
-# remove comments for personal copy
-# uploaded version uses desktop path instead of a direct filepath
-# make a distributable version again
+while True:
+    if running:
+        # Read phone numbers from the text file, format them, and skip duplicates
+        try:
+            with open(file_path, "r") as file:
+                process_phone_numbers(file)
+
+        except FileNotFoundError:
+            print(f"[orange]File not found: {file_path}")
+            print("[cyan]Creating a new file...")
+            print("[cyan]New File Created, Please go populate it with phone numbers")
+            # Create an empty file at the specified path
+            with open(file_path, "w") as file:
+                pass  # This will create an empty file
+
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            
+        running = False
