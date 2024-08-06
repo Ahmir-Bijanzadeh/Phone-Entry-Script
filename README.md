@@ -2,11 +2,11 @@
 using python to read phone numbers from a text file, and use pyAuto to paste them into a desired window one by one 
 
 
-/ and , for phone numbers on the same line will be pasted as indivisual numbers
+"/" and "," for phone numbers on the same line will be pasted as indivisual numbers
 numbers on seperate lines will be pasted
 duplicates of EXACTLY the same number will not be pasted
 area code parenthesis and all letters and special characters will be ignored
-area code leading 1 will count as a new entry (non duplicate)
+area code leading 1 will be ignored as it will be counted as the same number 
 target phone numbers MUST be in text file 
 text file MUST be called phone_numbers.txt
 text file MUST be on the DESKTOP (unless you change the file path)
