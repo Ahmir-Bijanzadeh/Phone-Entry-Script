@@ -3,6 +3,7 @@ import time
 import re
 import os
 import keyboard
+import sys
 from rich import print
 # Get the path to the user's desktop
 desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -31,6 +32,7 @@ def emergency_stop():
     if running:
         print("\n[red]Program terminated.")
         running = False
+        sys.exit()
 
 
 # Register the hotkey
@@ -66,6 +68,7 @@ def process_phone_numbers(file):
                 time.sleep(1) # delay between inputs
     if running:
         print("\n[magenta]All phone numbers copied!")
+        sys.exit()
 
 
 while True:
@@ -76,14 +79,16 @@ while True:
                 process_phone_numbers(file)
 
         except FileNotFoundError:
-            print(f"[orange]File not found: {file_path}")
+            print(f"[yellow]File not found: {file_path}")
             print("[cyan]Creating a new file...")
             print("[cyan]New File Created, Please go populate it with phone numbers")
             # Create an empty file at the specified path
             with open(file_path, "w") as file:
                 pass  # This will create an empty file
+                sys.exit()
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
+            sys.exit()
             
         running = False
