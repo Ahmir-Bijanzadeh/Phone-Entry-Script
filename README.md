@@ -9,7 +9,9 @@ File Management: Automatically creates a text file if none exists and checks for
 Data Cleansing: Sanitizes each entry, removing all non-number characters including special characters.
 
 ## Installation:
-download the distribution package and run the phone_script.exe
+download the distribution package for the cooresponding operating system and run the phone_script.exe\
+Downloading Python or an interpreter is not required.\
+Your operating system might flag the program as malicious, so be sure to disable/allow the program to run. You might need to consider running the program as adminsitrator.
 
 ## Prerequisites:
 Create a text file called "phone_numbers.txt" on your desktop. Or alternatively run the program once to have it create the file for you. It will be created on the users desktop by default with the name "phone_numbers.txt"\
