@@ -9,9 +9,14 @@ File Management: Automatically creates a text file if none exists and checks for
 Data Cleansing: Sanitizes each entry, removing all non-number characters including special characters.
 
 ## Installation:
-download the distribution package for the cooresponding operating system and run the phone_script.exe\
-Downloading Python or an interpreter is not required.\
-Your operating system might flag the program as malicious, so be sure to disable/allow the program to run. You might need to consider running the program as adminsitrator.
+download python\
+download the various packages used for this app:\
+-pyautogui\
+-rich\
+-keyboard\
+-os\
+-time\
+-re
 
 ## Prerequisites:
 Create a text file called "phone_numbers.txt" on your desktop. Or alternatively run the program once to have it create the file for you. It will be created on the users desktop by default with the name "phone_numbers.txt"\
@@ -33,4 +38,5 @@ Emergency Stop: Press 'F4' or move the mouse to the top corner of the screen to 
 
 ## Future Updates
 Image Support: Possible future updates may include support for sending images in mass texts, depending on upcoming changes in Google Messages and other platforms.\
-RCS Compatibility: Further tweaks and enhancements may be necessary to account for IOS RCS support. Mostly only if google messages decides to change something though.
+RCS Compatibility: Further tweaks and enhancements may be necessary to account for IOS RCS support. Mostly only if google messages decides to change something though.\
+Imessage support, depending on the way imessage for mac devices works, there is potential to modify the mac version to suppport imessage as well.
