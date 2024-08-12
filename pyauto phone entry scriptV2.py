@@ -6,7 +6,6 @@ import keyboard
 import sys
 from rich import print
 
-#file_path = "C:/Users/ahmir/OneDrive/Desktop/phone entry script/phone_numbers.txt" direct path for alt location
 desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
 file_path = os.path.join(desktop_path, "phone_numbers.txt")
 
