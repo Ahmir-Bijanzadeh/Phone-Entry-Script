@@ -39,4 +39,4 @@ Emergency Stop: Press 'F4' or move the mouse to the top corner of the screen to 
 ## Future Updates
 Image Support: Possible future updates may include support for sending images in mass texts, depending on upcoming changes in Google Messages and other platforms.\
 RCS Compatibility: Further tweaks and enhancements may be necessary to account for IOS RCS support. Mostly only if google messages decides to change something though.\
-Imessage support, depending on the way imessage for mac devices works, there is potential to modify the mac version to suppport imessage as well.
+Imessage support, imessage does not currently support mass messaging afaik, the only way to do so is to disable imessage AND group messaging, so its possible* but you need to disable the key features of imessage to do so. There is also very little info online about how the mac messages app interacts with your iphone, further research required!
