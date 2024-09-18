@@ -64,9 +64,9 @@ def process_phone_numbers(file):
                 time.sleep(1)
                 
     if running:
-        print("\n[magenta]All phone numbers copied!\nProgram will automatically close in 5 seconds")
-        time.sleep(5)
-        sys.exit()
+        print("\n[magenta]All phone numbers copied!\nPress [green]f2[/green] to run again.\nPress [red]f4[/red] to stop early.\nremember, duplicates will be ignored (within this session only).[/magenta]")
+        #time.sleep(5)
+        #sys.exit()
 
 
 while True:
