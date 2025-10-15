@@ -2,7 +2,6 @@ import pyautogui
 import time
 import re
 import os
-import keyboard
 import sys
 from rich import print
 
@@ -11,32 +10,38 @@ desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
 file_path = os.path.join(desktop_path, "phone_numbers.txt")
 
 # --- Image File Definition ---
-IMAGE_FILE_NAME = "picture_to_send.png"
-IMAGE_PATH = os.path.join(desktop_path, IMAGE_FILE_NAME) 
-# Note: For this to work, you must place an image named "picture_to_send.png" on your desktop.
-# -----------------------------
+def find_images():
+    """Find all image files in the project directory and return as list."""
+    images = []
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # First, look for images in the project directory
+    for ext in ['.png', '.jpg', '.jpeg']:
+        for file in os.listdir(project_dir):
+            if file.lower().endswith(ext):
+                images.append(os.path.join(project_dir, file))
+    
+    # If no images found in project directory, fall back to desktop
+    if not images:
+        IMAGE_FILE_NAME = "picture_to_send.png"
+        images.append(os.path.join(desktop_path, IMAGE_FILE_NAME))
+    
+    return images
 
-print("\n[yellow]Program is ready, please press[/yellow][green] f2[/green][yellow] to begin.\nTo stop the program early press[/yellow][red] f4")
+IMAGE_PATHS = find_images()
+# -----------------------------
 
 # Store unique numbers processed in this session to avoid duplicates
 unique_phone_numbers = set() 
 running = False
 message_text = None # Global variable to store the user's message input
 
-# --- NEW FUNCTION: Get Message Text from User ---
+# --- Get Message Text from User ---
 def get_user_message():
-    """Prompts the user to input the message text."""
+    """Gets message text from user."""
     global message_text
-    print("\n[cyan]----------------------------------------[/cyan]")
-    print("[cyan]STEP 1: MESSAGE CONTENT[/cyan]")
-    print("[yellow]Please enter the message you want to send:[/yellow]")
-    
-    # Capture the message text
-    message_text = input(">> ")
-    
-    if not message_text:
-         print("[red]Message cannot be empty. Program terminated.[/red]")
-         sys.exit()
+    print("Enter message (press Enter to continue):")
+    message_text = input()
 # -----------------------------------------------
 
 def start_printing():
@@ -80,12 +85,6 @@ def kill():
     """Cleanly exits the entire application."""
     sys.exit()
 
-# Set up hotkeys for control
-keyboard.add_hotkey('f4', emergency_stop)
-keyboard.add_hotkey('f2', start_printing)
-keyboard.add_hotkey('f5', kill)
-# f6 hotkey is removed as image paste is now part of the main loop
-
 def process_phone_numbers(file):
     """
     Reads, sanitizes, and executes the full automation loop for each unique number.
@@ -114,12 +113,14 @@ def process_phone_numbers(file):
         print("[yellow]No new or unique phone numbers found to process.[/yellow]")
         return
         
-    if not os.path.exists(IMAGE_PATH):
-        print(f"\n[red]CRITICAL ERROR: Image file not found at: {IMAGE_PATH}[/red]")
-        print("[red]Please place 'picture_to_send.png' on your desktop and restart.[/red]")
+    # Check if we have any valid image paths
+    valid_images = [img for img in IMAGE_PATHS if os.path.exists(img)]
+    if not valid_images:
+        print("\n[red]CRITICAL ERROR: No valid images found![/red]")
+        print("[red]Please add images to the project folder or place 'picture_to_send.png' on your desktop.[/red]")
         return
 
-    print(f"[yellow]Found {len(all_sanitized_numbers)} unique numbers. Starting sequence.[/yellow]")
+    print(f"[yellow]Found {len(all_sanitized_numbers)} unique numbers and {len(valid_images)} images. Starting sequence.[/yellow]")
     
     # 2. Start the automation loop
     for phone_number in all_sanitized_numbers:
@@ -141,22 +142,24 @@ def process_phone_numbers(file):
         time.sleep(2.0) # Wait for the message field to load/focus
         
         # 4. Paste text from user input
-        pyautogui.typewrite(message_text)
-        time.sleep(1.5) 
+        if message_text:
+            pyautogui.typewrite(message_text)
+            time.sleep(1.5)
         
-        # 5. Open attachment dialog
-        print("[yellow]Simulating 'Attach File' dialog opening...[/yellow]")
-        # NOTE: You may need to change 'ctrl', 'shift', 'a' to the correct hotkey for your app.
-        pyautogui.hotkey('ctrl', 'shift', 'a') 
-        time.sleep(2.0) # Wait for file dialog to appear
+        # 5. Send each image for this number
+        for image_path in valid_images:
+            # Open attachment dialog
+            print(f"[yellow]Attaching image: {os.path.basename(image_path)}[/yellow]")
+            pyautogui.hotkey('ctrl', 'shift', 'a')
+            time.sleep(2.0)
+            
+            # Type image path and send
+            pyautogui.typewrite(image_path)
+            time.sleep(1.0)
+            pyautogui.press("enter")
+            time.sleep(3.0) # Wait for image to upload/attach
         
-        # 6. Paste predetermined image file (by typing file path)
-        pyautogui.typewrite(IMAGE_PATH)
-        time.sleep(1.0)
-        pyautogui.press("enter")
-        time.sleep(3.0) # Wait for image to upload/attach
-        
-        # 7. enter (to send the message/image)
+        # 6. Send the message with all attached images
         pyautogui.press("enter")
         time.sleep(2.0) # Delay before starting the next number sequence
                 
@@ -164,17 +167,47 @@ def process_phone_numbers(file):
         print("\n[magenta]All messaging sequences completed!\nPress [green]f2[/green] to run again.\nPress [red]f4[/red] to stop early.[/magenta]")
 
 
-while True:
-    if running:
-        try:
-            with open(file_path, "r") as file:
-                process_phone_numbers(file)
-        except Exception as e:
-            # Catch file reading errors or other exceptions
-            print(f"fatal error occurred: {str(e)}\nprogram will close in 2 seconds")
-            time.sleep(2)
-            sys.exit()
-        running = False # Stop the pasting loop after file is processed
+def main():
+    global running
+    while True:
+        print("\nPhone Entry Script")
+        print("1. Start sending messages")
+        print("2. Exit")
+        choice = input("Choose an option (1-2): ")
+        
+        if choice == "1":
+            running = True
+            try:
+                if not os.path.exists(file_path):
+                    print(f"File not found: {file_path}")
+                    print("Creating a new file...")
+                    with open(file_path, "w") as file:
+                        pass
+                    print("New file created. Please populate it with phone numbers.")
+                    continue
+                
+                get_user_message()
+                
+                print("Focus the target application window")
+                for i in range(5, 0, -1):
+                    print(f"Starting in {i}...")
+                    time.sleep(1)
+                
+                with open(file_path, "r") as file:
+                    process_phone_numbers(file)
+                
+            except Exception as e:
+                print(f"Error occurred: {str(e)}")
+                time.sleep(2)
+            finally:
+                running = False
+        
+        elif choice == "2":
+            print("Exiting...")
+            sys.exit(0)
+        
+        else:
+            print("Invalid choice. Please try again.")
 
-    # Small pause to prevent excessive CPU usage while waiting for hotkey
-    time.sleep(0.1)
+if __name__ == "__main__":
+    main()
